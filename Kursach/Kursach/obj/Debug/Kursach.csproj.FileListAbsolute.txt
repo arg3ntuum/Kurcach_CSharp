@@ -10,3 +10,15 @@ C:\Users\User\source\repos\Kursach\Kursach\obj\Debug\Kursach.exe
 C:\Users\User\source\repos\Kursach\Kursach\obj\Debug\Kursach.pdb
 C:\Users\User\source\repos\Kursach\Kursach\obj\Debug\Kursach.FormChild.resources
 C:\Users\User\source\repos\Kursach\Kursach\obj\Debug\Kursach.FormGeneral.resources
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\bin\Debug\Kursach.exe.config
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\bin\Debug\Kursach.exe
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\bin\Debug\Kursach.pdb
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\obj\Debug\Kursach.csproj.AssemblyReference.cache
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\obj\Debug\Kursach.csproj.SuggestedBindingRedirects.cache
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\obj\Debug\Kursach.FormChild.resources
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\obj\Debug\Kursach.FormGeneral.resources
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\obj\Debug\Kursach.Properties.Resources.resources
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\obj\Debug\Kursach.csproj.GenerateResource.cache
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\obj\Debug\Kursach.csproj.CoreCompileInputs.cache
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\obj\Debug\Kursach.exe
+C:\Users\User\Documents\GitHub\Kurcach_CSharp\Kursach\Kursach\obj\Debug\Kursach.pdb
