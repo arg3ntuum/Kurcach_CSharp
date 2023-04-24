@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Kursach
 {
@@ -15,7 +14,10 @@ namespace Kursach
     {
         private FormGeneral _parent { get; set; }
         private Graphics _grfx { get; set; }
+        private Image _imageBuffer { get; set; }
+        
         private Rectangle _rect{ get; set; }
+        
         public FormChild(FormGeneral parent, string caption)
         {
             InitializeComponent();
@@ -34,33 +36,30 @@ namespace Kursach
 
             //Задание заголовка
             this.Text = caption;
-
-            
         }
-
-        private void FormChild_Resize(object sender, EventArgs e)
-        {
-            Invalidate();
-        }
-
         public void FormChild_Paint(object sender, PaintEventArgs e)
         {
-            if (_parent.ImageBuffer == null)
+            if (_imageBuffer == null)
                 return;
 
             _grfx = e.Graphics;
 
-            DrawImageToForm();
-        }
-        public void DrawImageToForm() {
-            Rectangle rect = ClientRectangle;
-
-            _grfx.DrawImage(_parent.ImageBuffer, 0, 0, rect.Width, rect.Height);
+            _grfx.DrawImage(_imageBuffer, 0, 0, _rect.Width, _rect.Height);
 
             _grfx.Dispose();
         }
-        private void FormChild_Load(object sender, EventArgs e)
-        {
+        public void UploadImageToBuffer() { 
+            if (_parent.ImageBuffer == null)
+                return;
+
+            _imageBuffer = _parent.ImageBuffer;
         }
+            
+        
+
+        private void FormChild_Resize(object sender, EventArgs e) =>
+            Invalidate();//перерисовать
+
+        private void FormChild_Load(object sender, EventArgs e) {  }
     }
 }

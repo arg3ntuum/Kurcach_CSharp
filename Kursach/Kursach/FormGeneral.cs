@@ -14,7 +14,7 @@ namespace Kursach
     Задачи:
     
     +1) Створити – створення нового дочірнього вікна.
-    2) Відкрити – відкриття файлів із зображеннями 
+    +2) Відкрити – відкриття файлів із зображеннями 
             ( формат файлів *.bmp, *.jpg, *.png, *.gif, *.tiff).
     3) Зберегти – збереження зображення в тому самому форматі.
     4) Зберегти як… - збереження зображення в одному з наступних форматів 
@@ -51,7 +51,6 @@ namespace Kursach
             OpenFileDialogWindow.Filter = 
                 "Image files(*.bmp;*.jpg;*.png;*.gif;*.tiff)|*.bmp;*.jpg;*.png;*.gif;*.tiff";
             
-
             //ResizeRedraw = true;
         }
 
@@ -62,6 +61,9 @@ namespace Kursach
 
             // Вывод созданной формы
             newChild.Show();
+
+            // Подзагрузка Image
+            newChild.UploadImageToBuffer();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -87,13 +89,16 @@ namespace Kursach
             // Определение активного дочернего MDI-окна
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
 
-            if (activeChildForm != null) 
-                activeChildForm.DrawImageToForm();
-            else {
-                DialogResult dialogResult = 
+            if (activeChildForm == null)
+            {
+                DialogResult dialogResult =
                     MessageBox.Show("Вы хотите создать форму для отображения картинки?", "ПРЕДУПРЕЖДЕНИЕ", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                     CreateToolStripMenuItem_Click(null, null);
+            }
+            else {
+                activeChildForm.UploadImageToBuffer();
+                activeChildForm.Invalidate();
             }
         }
 
