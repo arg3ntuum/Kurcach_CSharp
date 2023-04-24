@@ -26,9 +26,12 @@ namespace Kursach
     */
     public partial class FormGeneral : Form
     {
+        public const string FilesFilter = 
+            "Image files(*.bmp;*.jpg;*.png;*.gif;*.tiff)|*.bmp;*.jpg;*.png;*.gif;*.tiff";
+
         // Буфер для картинки, через який передається на форму картинка
-        public Image ImageBuffer { get; set; }
-        private string _imageName { get; set; }
+        public Image ImageBuffer { get; private set; }
+        public string ImageName { get; private set; }
         private int _nextFormNumber { get; set; }
 
         public FormGeneral()
@@ -37,7 +40,7 @@ namespace Kursach
 
             // Присваиваем свойствам значения
             ImageBuffer = null;
-            _imageName = string.Empty;
+            ImageName = string.Empty;
             _nextFormNumber = 1;
 
             // Присваиваем название для формы
@@ -48,8 +51,8 @@ namespace Kursach
             // Встановити назву для image файлу
             OpenFileDialogWindow.FileName = "image.png";
             // Встановлюємо фільтр для файлів
-            OpenFileDialogWindow.Filter = 
-                "Image files(*.bmp;*.jpg;*.png;*.gif;*.tiff)|*.bmp;*.jpg;*.png;*.gif;*.tiff";
+            OpenFileDialogWindow.Filter =
+                FilesFilter;
             
             //ResizeRedraw = true;
         }
@@ -73,15 +76,15 @@ namespace Kursach
                 return;
 
             // получаем выбранный файл
-            _imageName = OpenFileDialogWindow.FileName;
+            ImageName = OpenFileDialogWindow.FileName;
 
             try
             {
-                ImageBuffer = Image.FromFile(_imageName);
+                ImageBuffer = Image.FromFile(ImageName);
             }
             catch
             {
-                MessageBox.Show("Cannot find file " + _imageName +
+                MessageBox.Show("Cannot find file " + ImageName +
                "!", Text, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
@@ -104,12 +107,40 @@ namespace Kursach
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
 
+            if (activeChildForm != null)
+            {
+                DialogResult dialogResult =
+                     MessageBox.Show("Вы хотите сохранить картинку в том же файле?", "Внимание!", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    activeChildForm.ImageBuffer.Save(activeChildForm.ImageName);
+                    activeChildForm.Close();
+                }
+            }
+            else MessageBox.Show("ActiveMdiChild == null!");
         }
 
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
 
+            if (activeChildForm != null)
+            {
+                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+                saveFileDialog1.Filter = FilesFilter;
+                saveFileDialog1.RestoreDirectory = true;
+
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    string FileName = saveFileDialog1.FileName;
+                    activeChildForm.ImageBuffer.Save(FileName);
+                    activeChildForm.Close();
+                }
+            }
+            else MessageBox.Show("ActiveMdiChild == null!");
         }
 
         private void CloseToolStripMenuItem_Click(object sender, EventArgs e)

@@ -12,10 +12,11 @@ namespace Kursach
 {
     public partial class FormChild : Form
     {
+        public Image ImageBuffer { get; private set; }
+        public string ImageName { get; private set; }
+        
         private FormGeneral _parent { get; set; }
         private Graphics _grfx { get; set; }
-        private Image _imageBuffer { get; set; }
-        
         private Rectangle _rect{ get; set; }
         
         public FormChild(FormGeneral parent, string caption)
@@ -39,23 +40,22 @@ namespace Kursach
         }
         public void FormChild_Paint(object sender, PaintEventArgs e)
         {
-            if (_imageBuffer == null)
+            if (ImageBuffer == null)
                 return;
 
             _grfx = e.Graphics;
 
-            _grfx.DrawImage(_imageBuffer, 0, 0, _rect.Width, _rect.Height);
+            _grfx.DrawImage(ImageBuffer, 0, 0, _rect.Width, _rect.Height);
 
             _grfx.Dispose();
         }
         public void UploadImageToBuffer() { 
-            if (_parent.ImageBuffer == null)
+            if (_parent.ImageBuffer == null || _parent.ImageName == string.Empty)
                 return;
 
-            _imageBuffer = _parent.ImageBuffer;
+            ImageBuffer = _parent.ImageBuffer;
+            ImageName = _parent.ImageName;
         }
-            
-        
 
         private void FormChild_Resize(object sender, EventArgs e) =>
             Invalidate();//перерисовать
