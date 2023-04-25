@@ -157,7 +157,8 @@ namespace Kursach
                         throw new ArgumentException("Нечего сохранять, изображение не загружено");
                     if (string.IsNullOrWhiteSpace(activeChildForm.ImagePath))
                         throw new ArgumentException("Не задан путь сохранения");
-
+                    
+                    File.Delete(activeChildForm.ImagePath);
                     activeChildForm.ImageBuffer.Save(activeChildForm.ImagePath, activeChildForm.ImageFormat);
                     activeChildForm.Close();
                 }
@@ -170,23 +171,7 @@ namespace Kursach
 
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
-
-            if (activeChildForm != null)
-            {
-                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-
-                saveFileDialog1.Filter = FilesFilter;
-                saveFileDialog1.RestoreDirectory = true;
-
-                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-                {
-                    string FileName = saveFileDialog1.FileName;
-                    activeChildForm.ImageBuffer.Save(FileName);
-                    activeChildForm.Close();
-                }
-            }
-            else MessageBox.Show("ActiveMdiChild == null!");
+            
         }
 
         private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -202,11 +187,6 @@ namespace Kursach
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
-        }
-        public static Bitmap LoadBitmap(string fileName)
-        {
-            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-                return new Bitmap(fs);
         }
         private void FormGeneral_Load(object sender, EventArgs e)
         {
