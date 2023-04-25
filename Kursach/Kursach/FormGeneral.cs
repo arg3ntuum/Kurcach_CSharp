@@ -60,8 +60,9 @@ namespace Kursach
             "Image files(*.bmp;*.jpg;*.png;*.gif;*.tiff)|*.bmp;*.jpg;*.png;*.gif;*.tiff";
 
         // Буфер для картинки, через який передається на форму картинка
-        public Image ImageBuffer { get; private set; }
+        public Bitmap ImageBuffer { get; private set; }
         public string ImagePath { get; private set; }
+
         private int _nextFormNumber { get; set; }
 
         public FormGeneral()
@@ -81,8 +82,7 @@ namespace Kursach
             // Встановити назву для image файлу
             OpenFileDialogWindow.FileName = "image.png";
             // Встановлюємо фільтр для файлів
-            OpenFileDialogWindow.Filter =
-                FilesFilter;
+            OpenFileDialogWindow.Filter = FilesFilter;
             
             //ResizeRedraw = true;
         }
@@ -110,7 +110,10 @@ namespace Kursach
 
             try
             {
-                ImageBuffer = Image.FromFile(ImagePath);
+                using (var fileStream = File.OpenRead(ImagePath))
+                {
+                    ImageBuffer = (Bitmap)Image.FromStream(fileStream);
+                }
             }
             catch
             {
@@ -133,29 +136,35 @@ namespace Kursach
                 activeChildForm.UploadImageToBuffer();
                 activeChildForm.Invalidate();
             }
+            ImageBuffer = null;
+            ImagePath = string.Empty;
         }
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (FormChild activeChildForm = (FormChild)this.ActiveMdiChild) { 
-                if (activeChildForm != null)
+            if (this.ActiveMdiChild is null)
+            {
+                MessageBox.Show("ActiveMdiChild == null!");
+                return;
+            }
+            if (MessageBox.Show("Вы хотите сохранить картинку в том же файле?", "Внимание!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                try
                 {
-                    DialogResult dialogResult =
-                         MessageBox.Show("Вы хотите сохранить картинку в том же файле?", "Внимание!", MessageBoxButtons.YesNo);
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        if (activeChildForm.ImageBuffer != null && !string.IsNullOrEmpty(activeChildForm.ImagePath) && activeChildForm.ImageFormat != null)
-                        {
-                            Image image = Image.FromFile(activeChildForm.ImagePath);
-                            
-                            Bitmap images = new Bitmap(image);
-                            activeChildForm.ImageBuffer.Save(activeChildForm.ImagePath, activeChildForm.GetImageFormat());
-                            
-                            activeChildForm.Close();
-                        }
-                    }
+                    FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
+
+                    if (activeChildForm.ImageBuffer is null)
+                        throw new ArgumentException("Нечего сохранять, изображение не загружено");
+                    if (string.IsNullOrWhiteSpace(activeChildForm.ImagePath))
+                        throw new ArgumentException("Не задан путь сохранения");
+
+                    activeChildForm.ImageBuffer.Save(activeChildForm.ImagePath, activeChildForm.ImageFormat);
+                    activeChildForm.Close();
                 }
-                else MessageBox.Show("ActiveMdiChild == null!");
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, ex.GetType().Name);
+                }
             }
         }
 
@@ -194,7 +203,11 @@ namespace Kursach
         {
             Application.Exit();
         }
-
+        public static Bitmap LoadBitmap(string fileName)
+        {
+            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                return new Bitmap(fs);
+        }
         private void FormGeneral_Load(object sender, EventArgs e)
         {
 

@@ -14,9 +14,8 @@ namespace Kursach
 {
     public partial class FormChild : Form
     {
-        public Image ImageBuffer { get; private set; }
+        public Bitmap ImageBuffer { get; private set; }
         public ImageFormat ImageFormat { get; private set; }
-        
         public string ImagePath { get; private set; }
 
         private FormGeneral _parent { get; set; }
@@ -67,29 +66,21 @@ namespace Kursach
 
             ImageBuffer = _parent.ImageBuffer;
             ImagePath = _parent.ImagePath;
-            ImageFormat = GetImageFormat();
+            ImageFormat = ImageBuffer.RawFormat;
         }
-        public ImageFormat GetImageFormat() {
-            string extension = Path.GetExtension(ImagePath).ToLower();
-
-            switch (extension)
-            {
-                case ".bmp":
-                    return ImageFormat.Bmp;
-                case ".gif":
-                    return ImageFormat.Gif;
-                case ".png":
-                    return ImageFormat.Png;
-                case ".tiff":
-                    return ImageFormat.Tiff;
-                case ".jpeg":
-                    return ImageFormat.Jpeg;
-                case ".jpg":
-                    return ImageFormat.Jpeg;
-                default:
-                    return null;
-            }
-        }
+        //public static string GetExtension(ImageFormat format)
+        //{
+        //    if (format == ImageFormat.Icon)
+        //        return ".ico";
+        //    if (format == ImageFormat.MemoryBmp)
+        //        return ".bmp";
+        //    return ImageCodecInfo.GetImageEncoders()
+        //        .FirstOrDefault(x => x.FormatID == format.Guid)?
+        //        .FilenameExtension
+        //        .Split(';')[0]
+        //        .TrimStart('*')
+        //        .ToLower() ?? $".{format.ToString().ToLower()}";
+        //}
         private void FormChild_Resize(object sender, EventArgs e) =>
             Invalidate();//перерисовать
 

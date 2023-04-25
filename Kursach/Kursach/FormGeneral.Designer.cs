@@ -47,7 +47,8 @@
             this.файлToolStripMenuItem});
             this.MenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MenuStrip.Name = "MenuStrip";
-            this.MenuStrip.Size = new System.Drawing.Size(800, 28);
+            this.MenuStrip.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
+            this.MenuStrip.Size = new System.Drawing.Size(600, 28);
             this.MenuStrip.TabIndex = 0;
             // 
             // файлToolStripMenuItem
@@ -111,11 +112,12 @@
             // 
             // FormGeneral
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(600, 366);
             this.Controls.Add(this.MenuStrip);
             this.MainMenuStrip = this.MenuStrip;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "FormGeneral";
             this.Load += new System.EventHandler(this.FormGeneral_Load);
             this.MenuStrip.ResumeLayout(false);
