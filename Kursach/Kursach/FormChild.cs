@@ -13,7 +13,7 @@ namespace Kursach
     public partial class FormChild : Form
     {
         public Image ImageBuffer { get; private set; }
-        public string ImageName { get; private set; }
+        public string ImagePath { get; private set; }
         
         private FormGeneral _parent { get; set; }
         private Graphics _grfx { get; set; }
@@ -54,7 +54,7 @@ namespace Kursach
                 return;
 
             ImageBuffer = _parent.ImageBuffer;
-            ImageName = _parent.ImageName;
+            ImagePath = _parent.ImageName;
         }
 
         private void FormChild_Resize(object sender, EventArgs e) =>

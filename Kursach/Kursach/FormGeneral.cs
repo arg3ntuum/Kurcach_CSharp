@@ -107,19 +107,20 @@ namespace Kursach
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
-
-            if (activeChildForm != null)
-            {
-                DialogResult dialogResult =
-                     MessageBox.Show("Вы хотите сохранить картинку в том же файле?", "Внимание!", MessageBoxButtons.YesNo);
-                if (dialogResult == DialogResult.Yes)
+            using (FormChild activeChildForm = (FormChild)this.ActiveMdiChild) { 
+                if (activeChildForm != null)
                 {
-                    activeChildForm.ImageBuffer.Save(activeChildForm.ImageName);
-                    activeChildForm.Close();
+                    DialogResult dialogResult =
+                         MessageBox.Show("Вы хотите сохранить картинку в том же файле?", "Внимание!", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+
+                        activeChildForm.ImageBuffer.Save(activeChildForm.ImagePath);
+                        activeChildForm.Close();
+                    }
                 }
+                else MessageBox.Show("ActiveMdiChild == null!");
             }
-            else MessageBox.Show("ActiveMdiChild == null!");
         }
 
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
