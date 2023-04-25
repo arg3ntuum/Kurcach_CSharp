@@ -7,6 +7,8 @@ using System.Text;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.IO;
+using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace Kursach
 {
@@ -23,6 +25,34 @@ namespace Kursach
             потрібно вивести запит про необхідність збереження змін у файл, якщо вони відбувались.
     6) Вихід – закриття всього додатку. Перед закриттям додатку необхідно вивести запит 
             про збереження змін в усіх відкритих файлах, в яких вони відбувалися.
+    2. Пункт меню Інформація має виводити докладні відомості про
+    зображення, що відкрите в активному дочірньому вікні, а саме – ім’я
+    файлу, повний шлях до файлу, формат файлу, розміри в пікселях – висоту
+    та ширину, вертикальну та горизонтальну роздільні здатності (в точках на
+    сантиметр), фізичні розміри в сантиметрах, використаний формат
+    пікселів, використання біта або байта прозорості, число біт на піксель.
+    3. Пункт меню Завдання містить 2 підпункти по кількості
+        індивідуальних завдань, при виборі яких запускається обробка. 
+    Варіант 10. Додайте в програму інструмент лупа для збільшення і
+        зменшення зображення. Лупа збільшує зображення при натисканні лівою
+        кнопкою миші, лупа зменшує зображення при натисканні правою кнопкою
+        миші. При виборі цього інструменту через меню або панель інструментів
+        повинен змінюватися курсор миші при знаходженні над клієнтської областю
+        вікна. Кнопка на панелі інструментів і пункт меню повинні бути позначені
+        при виборі відповідного інструменту.
+    Варіант 20. Підсумовування двох зображень або константи і
+        зображення. Функція imadd (X, Y, Z) підсумовує кожен елемент масиву X з
+        відповідним елементом масиву Y і повертає суму відповідних елементів в
+        результуючий масив Z. X і Y представляють собою масиви чисел із
+        плаваючою комою однакового розміру і однакового формату представлення
+        даних. Результуючий масив Z має той же розмір і формат представлення
+        даних, що і Y, коли Y скаляр формату double. В іншому випадку розмірність і
+        формат представлення даних результуючого масиву Z збігається з масивом
+        X. Коли X і Y є масиви цілих чисел і елементи результуючого масиву
+        перевищують допустимий діапазон, то вони скорочуються або
+        округлюються. Продемонструйте в програмі застосування цієї функції.
+
+
     */
     public partial class FormGeneral : Form
     {
@@ -31,7 +61,7 @@ namespace Kursach
 
         // Буфер для картинки, через який передається на форму картинка
         public Image ImageBuffer { get; private set; }
-        public string ImageName { get; private set; }
+        public string ImagePath { get; private set; }
         private int _nextFormNumber { get; set; }
 
         public FormGeneral()
@@ -40,7 +70,7 @@ namespace Kursach
 
             // Присваиваем свойствам значения
             ImageBuffer = null;
-            ImageName = string.Empty;
+            ImagePath = string.Empty;
             _nextFormNumber = 1;
 
             // Присваиваем название для формы
@@ -76,15 +106,15 @@ namespace Kursach
                 return;
 
             // получаем выбранный файл
-            ImageName = OpenFileDialogWindow.FileName;
+            ImagePath = OpenFileDialogWindow.FileName;
 
             try
             {
-                ImageBuffer = Image.FromFile(ImageName);
+                ImageBuffer = Image.FromFile(ImagePath);
             }
             catch
             {
-                MessageBox.Show("Cannot find file " + ImageName +
+                MessageBox.Show("Cannot find file " + ImagePath +
                "!", Text, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
@@ -114,9 +144,15 @@ namespace Kursach
                          MessageBox.Show("Вы хотите сохранить картинку в том же файле?", "Внимание!", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
-
-                        activeChildForm.ImageBuffer.Save(activeChildForm.ImagePath);
-                        activeChildForm.Close();
+                        if (activeChildForm.ImageBuffer != null && !string.IsNullOrEmpty(activeChildForm.ImagePath) && activeChildForm.ImageFormat != null)
+                        {
+                            Image image = Image.FromFile(activeChildForm.ImagePath);
+                            
+                            Bitmap images = new Bitmap(image);
+                            activeChildForm.ImageBuffer.Save(activeChildForm.ImagePath, activeChildForm.GetImageFormat());
+                            
+                            activeChildForm.Close();
+                        }
                     }
                 }
                 else MessageBox.Show("ActiveMdiChild == null!");
