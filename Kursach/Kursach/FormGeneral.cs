@@ -9,6 +9,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using System.Runtime.Remoting.Messaging;
 
 namespace Kursach
 {
@@ -18,10 +19,10 @@ namespace Kursach
     +1) Створити – створення нового дочірнього вікна.
     +2) Відкрити – відкриття файлів із зображеннями 
             ( формат файлів *.bmp, *.jpg, *.png, *.gif, *.tiff).
-    3) Зберегти – збереження зображення в тому самому форматі.
-    4) Зберегти як… - збереження зображення в одному з наступних форматів 
+    +3) Зберегти – збереження зображення в тому самому форматі.
+    +4) Зберегти як… - збереження зображення в одному з наступних форматів 
             *.bmp, *.jpg, *.png, *.gif, *.tiff
-    5) Закрити – закриття дочірнього вікна. Перед закриттям дочірнього вікна 
+    +5) Закрити – закриття дочірнього вікна. Перед закриттям дочірнього вікна 
             потрібно вивести запит про необхідність збереження змін у файл, якщо вони відбувались.
     6) Вихід – закриття всього додатку. Перед закриттям додатку необхідно вивести запит 
             про збереження змін в усіх відкритих файлах, в яких вони відбувалися.
@@ -56,9 +57,6 @@ namespace Kursach
     */
     public partial class FormGeneral : Form
     {
-        public const string FilesFilter = 
-            "Image files(*.bmp;*.jpg;*.png;*.gif;*.tiff)|*.bmp;*.jpg;*.png;*.gif;*.tiff";
-
         // Буфер для картинки, через який передається на форму картинка
         public Bitmap ImageBuffer { get; private set; }
         public string ImagePath { get; private set; }
@@ -80,9 +78,9 @@ namespace Kursach
             IsMdiContainer = true;
 
             // Встановити назву для image файлу
-            OpenFileDialogWindow.FileName = "image.png";
+            OpenFileDialogWindow.FileName = Const.ImageFileName;
             // Встановлюємо фільтр для файлів
-            OpenFileDialogWindow.Filter = FilesFilter;
+            OpenFileDialogWindow.Filter = Const.FilesFilter;
             
             //ResizeRedraw = true;
         }
@@ -98,7 +96,6 @@ namespace Kursach
             // Подзагрузка Image
             newChild.UploadImageToBuffer();
         }
-
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //если результат равен Cancel, то выходим
@@ -110,10 +107,9 @@ namespace Kursach
 
             try
             {
+                //пытаемся открыть файл
                 using (var bmp = (Bitmap)Image.FromFile(ImagePath))
-                {
                     ImageBuffer = new Bitmap(bmp);
-                }
             }
             catch
             {
@@ -128,7 +124,7 @@ namespace Kursach
             if (activeChildForm == null)
             {
                 DialogResult dialogResult =
-                    MessageBox.Show("Вы хотите создать форму для отображения картинки?", "ПРЕДУПРЕЖДЕНИЕ", MessageBoxButtons.YesNo);
+                    MessageBox.Show("Вы хотите создать форму для отображения картинки?", Const.Messages.Attention, MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                     CreateToolStripMenuItem_Click(null, null);
             }
@@ -139,91 +135,112 @@ namespace Kursach
             ImageBuffer = null;
             ImagePath = string.Empty;
         }
-
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
             {
-                MessageBox.Show("ActiveMdiChild == null!");
+                MessageBox.Show(Const.Messages.IsNull("ActiveMdiChild"));
                 return;
             }
-            if (MessageBox.Show("Вы хотите сохранить картинку в том же файле?", "Внимание!", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                try
-                {
-                    FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
 
-                    if (activeChildForm.ImageBuffer is null)
-                        throw new ArgumentException("Нечего сохранять, изображение не загружено");
-                    if (string.IsNullOrWhiteSpace(activeChildForm.ImagePath))
-                        throw new ArgumentException("Не задан путь сохранения");
-                    
-                    File.Delete(activeChildForm.ImagePath);
-                    activeChildForm.ImageBuffer.Save(activeChildForm.ImagePath, activeChildForm.ImageFormat);
-                    activeChildForm.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, ex.GetType().Name);
-                }
-            }
+            // Получаем активную форму 
+            FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
+
+            // Получаем ответ от пользователя
+            DialogResult dialogResult =
+                MessageBox.Show(Const.Messages.ImageInThisFile, Const.Messages.Attention, MessageBoxButtons.YesNo);
+
+            // Если ответ да, то сохраняем
+            if (dialogResult == DialogResult.Yes)
+                Save(activeChildForm, activeChildForm.ImagePath);
         }
-
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
             {
-                MessageBox.Show("ActiveMdiChild == null!");
+                MessageBox.Show(Const.Messages.IsNull("ActiveMdiChild"));
                 return;
             }
 
+            // Создаем объект SaveFileDialog
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-            saveFileDialog1.Filter = FilesFilter;
-            saveFileDialog1.RestoreDirectory = true;
+            // Проводим настройку
+            saveFileDialog1.Filter = Const.FilesFilter;
 
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
-                    string imagePath = saveFileDialog1.FileName;
-                    
-
-                    if (activeChildForm.ImageBuffer is null)
-                        throw new ArgumentException("Нечего сохранять, изображение не загружено");
-                    if (string.IsNullOrWhiteSpace(imagePath))
-                        throw new ArgumentException("Не задан путь сохранения");
-
-                    File.Delete(imagePath);
-                    activeChildForm.ImageBuffer.Save(imagePath);
-                    activeChildForm.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, ex.GetType().Name);
-                }
-            }
-        }
-
-        private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
-        {
             // Определение активного дочернего MDI-окна
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
 
-            // Перед тем как использовать потолок, необходимо убедиться в том, что он доступен
-            if (activeChildForm != null)
-                activeChildForm.Close();// Закрытие окна
+            // Проверяем, нажал ли пользователь ОК, и тогда сохраняем
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                Save(activeChildForm, saveFileDialog1.FileName);
         }
+        private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Проверяем есть ли активная форма
+            if (this.ActiveMdiChild is null)
+            {
+                MessageBox.Show(Const.Messages.IsNull("ActiveMdiChild"));
+                return;
+            }
 
+            // Определение активного дочернего MDI-окна
+            FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
+
+            // Сохраняем значение, если пользователь того хочет
+            GetAnswerToSaveAndSave(activeChildForm);
+
+            // Закрытие окна
+            activeChildForm.Close();
+        }
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Проверяем есть ли активная форма и закрываем приложение, если нет их
+            if (this.ActiveMdiChild is null)
+                Application.Exit();
+            
+            foreach (FormChild item in MdiChildren)
+            {
+                item.Select();
+                GetAnswerToSaveAndSave(item);
+            }
+
+            //Закрываем приложение
             Application.Exit();
         }
-        private void FormGeneral_Load(object sender, EventArgs e)
-        {
+        private void GetAnswerToSaveAndSave(FormChild item) {
+            // Если файл был изменен, сохраняем значения
+            if (item.IsChanged)
+            {
+                // Проверяем, нажал ли пользователь ОК, и тогда сохраняем
+                DialogResult dialogResult =
+                    MessageBox.Show(Const.Messages.ImageInThisFile, Const.Messages.Attention, MessageBoxButtons.OKCancel);
 
+                // Проверяем, нажал ли пользователь ОК, и тогда сохраняем
+                if (dialogResult == DialogResult.OK)
+                    Save(item, item.ImagePath);
+            }
         }
+        private void Save(FormChild activeChildForm, string path)
+        {
+            try {
+                if (activeChildForm.ImageBuffer is null)
+                    throw new ArgumentException("Нечего сохранять, изображение не загружено");
+                if (string.IsNullOrWhiteSpace(path))
+                    throw new ArgumentException("Не задан путь сохранения");
+
+                File.Delete(path);
+
+                activeChildForm.ImageBuffer.Save(path, activeChildForm.ImageFormat);
+                activeChildForm.Close();
+            }
+            catch (Exception ex){
+                MessageBox.Show(ex.Message, ex.GetType().Name);
+            }
+        }
+        private void FormGeneral_Load(object sender, EventArgs e){}
     }
 }
 

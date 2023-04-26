@@ -16,7 +16,9 @@ namespace Kursach
     {
         public Bitmap ImageBuffer { get; private set; }
         public ImageFormat ImageFormat { get; private set; }
+        
         public string ImagePath { get; private set; }
+        public bool IsChanged { get; private set; }
 
         private FormGeneral _parent { get; set; }
         private Graphics _grfx { get; set; }
@@ -31,6 +33,7 @@ namespace Kursach
             // Присваиваем публичным свойствам значения
             ImageBuffer = null;
             ImagePath = string.Empty;
+            IsChanged = false;
 
             // Присваиваем приватным свойствам значения
             _parent = parent;

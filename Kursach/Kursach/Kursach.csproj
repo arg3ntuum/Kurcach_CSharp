@@ -58,6 +58,7 @@
     <Compile Include="FormChild.Designer.cs">
       <DependentUpon>FormChild.cs</DependentUpon>
     </Compile>
+    <Compile Include="Const.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormChild.resx">
