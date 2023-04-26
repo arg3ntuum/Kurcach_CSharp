@@ -110,9 +110,9 @@ namespace Kursach
 
             try
             {
-                using (var fileStream = File.OpenRead(ImagePath))
+                using (var bmp = (Bitmap)Image.FromFile(ImagePath))
                 {
-                    ImageBuffer = (Bitmap)Image.FromStream(fileStream);
+                    ImageBuffer = new Bitmap(bmp);
                 }
             }
             catch
