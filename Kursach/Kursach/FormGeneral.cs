@@ -73,7 +73,7 @@ namespace Kursach
             _nextFormNumber = 1;
 
             // Присваиваем название для формы
-            Text = "Kursach";
+            Text = Const.ProgramName;
             // Форма является контейнером для дочерних MDI-форм
             IsMdiContainer = true;
 
@@ -209,6 +209,9 @@ namespace Kursach
 
             //Закрываем приложение
             Application.Exit();
+        }
+        private void UpdateRedactorNumb() { 
+        
         }
         private void GetAnswerToSaveAndSave(FormChild item) {
             // Если файл был изменен, сохраняем значения
