@@ -171,7 +171,39 @@ namespace Kursach
 
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            if (this.ActiveMdiChild is null)
+            {
+                MessageBox.Show("ActiveMdiChild == null!");
+                return;
+            }
+
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.Filter = FilesFilter;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
+                    string imagePath = saveFileDialog1.FileName;
+                    
+
+                    if (activeChildForm.ImageBuffer is null)
+                        throw new ArgumentException("Нечего сохранять, изображение не загружено");
+                    if (string.IsNullOrWhiteSpace(imagePath))
+                        throw new ArgumentException("Не задан путь сохранения");
+
+                    File.Delete(imagePath);
+                    activeChildForm.ImageBuffer.Save(imagePath);
+                    activeChildForm.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, ex.GetType().Name);
+                }
+            }
         }
 
         private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
