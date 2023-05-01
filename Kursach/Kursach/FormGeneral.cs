@@ -210,9 +210,6 @@ namespace Kursach
             //Закрываем приложение
             Application.Exit();
         }
-        private void UpdateRedactorNumb() { 
-        
-        }
         private void GetAnswerToSaveAndSave(FormChild item) {
             // Если файл был изменен, сохраняем значения
             if (item.IsChanged)
