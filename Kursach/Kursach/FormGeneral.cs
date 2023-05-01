@@ -222,6 +222,7 @@ namespace Kursach
                 if (dialogResult == DialogResult.OK)
                     Save(item, item.ImagePath);
             }
+            else { MessageBox.Show(Const.Messages.FileNotWasChanged); }
         }
         private void Save(FormChild activeChildForm, string path)
         {

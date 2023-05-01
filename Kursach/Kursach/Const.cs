@@ -10,8 +10,10 @@ namespace Kursach
         public partial class Messages { 
             public const string Attention = "Внимание!";
             public const string ImageInThisFile = "Вы хотите сохранить картинку в том же файле или вы предпочтете не сохранять вовсе?";
+            public const string FileNotWasChanged = "Файл не был изменен.";
             public static string IsNull(string str) =>
                 $"{str} is null";
+
         }
     }
 }
