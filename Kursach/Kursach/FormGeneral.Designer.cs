@@ -37,6 +37,7 @@
             this.CloseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenFileDialogWindow = new System.Windows.Forms.OpenFileDialog();
+            this.InformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,11 +45,12 @@
             // 
             this.MenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.MenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.файлToolStripMenuItem});
+            this.файлToolStripMenuItem,
+            this.InformationToolStripMenuItem});
             this.MenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MenuStrip.Name = "MenuStrip";
-            this.MenuStrip.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.MenuStrip.Size = new System.Drawing.Size(600, 28);
+            this.MenuStrip.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
+            this.MenuStrip.Size = new System.Drawing.Size(800, 30);
             this.MenuStrip.TabIndex = 0;
             // 
             // файлToolStripMenuItem
@@ -61,7 +63,7 @@
             this.CloseToolStripMenuItem,
             this.ExitToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // CreateToolStripMenuItem
@@ -110,14 +112,21 @@
             // 
             this.OpenFileDialogWindow.FileName = "OpenFileDialogWindow";
             // 
+            // InformationToolStripMenuItem
+            // 
+            this.InformationToolStripMenuItem.Name = "InformationToolStripMenuItem";
+            this.InformationToolStripMenuItem.Size = new System.Drawing.Size(104, 26);
+            this.InformationToolStripMenuItem.Text = "Інформація";
+            this.InformationToolStripMenuItem.Click += new System.EventHandler(this.InformationToolStripMenuItem_Click);
+            // 
             // FormGeneral
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(600, 366);
+            this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.MenuStrip);
             this.MainMenuStrip = this.MenuStrip;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "FormGeneral";
             this.Load += new System.EventHandler(this.FormGeneral_Load);
             this.MenuStrip.ResumeLayout(false);
@@ -138,6 +147,7 @@
         private System.Windows.Forms.ToolStripMenuItem CloseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ExitToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog OpenFileDialogWindow;
+        private System.Windows.Forms.ToolStripMenuItem InformationToolStripMenuItem;
     }
 }
 

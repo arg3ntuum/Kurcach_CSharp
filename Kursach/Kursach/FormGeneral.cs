@@ -222,7 +222,8 @@ namespace Kursach
                 if (dialogResult == DialogResult.OK)
                     Save(item, item.ImagePath);
             }
-            else { MessageBox.Show(Const.Messages.FileNotWasChanged); }
+            else
+                MessageBox.Show(Const.Messages.FileNotWasChanged); 
         }
         private void Save(FormChild activeChildForm, string path)
         {
@@ -242,6 +243,11 @@ namespace Kursach
             }
         }
         private void FormGeneral_Load(object sender, EventArgs e){}
+
+        private void InformationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
 
