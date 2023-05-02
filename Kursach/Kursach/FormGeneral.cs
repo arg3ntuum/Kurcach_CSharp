@@ -26,12 +26,17 @@ namespace Kursach
             потрібно вивести запит про необхідність збереження змін у файл, якщо вони відбувались.
     +6) Вихід – закриття всього додатку. Перед закриттям додатку необхідно вивести запит 
             про збереження змін в усіх відкритих файлах, в яких вони відбувалися.
-    2. Пункт меню Інформація має виводити докладні відомості про
-    зображення, що відкрите в активному дочірньому вікні, а саме – ім’я
-    файлу, повний шлях до файлу, формат файлу, розміри в пікселях – висоту
-    та ширину, вертикальну та горизонтальну роздільні здатності (в точках на
-    сантиметр), фізичні розміри в сантиметрах, використаний формат
-    пікселів, використання біта або байта прозорості, число біт на піксель.
+    +-2. Пункт меню Інформація має виводити докладні відомості про
+    зображення, що відкрите в активному дочірньому вікні, а саме – 
+    ім’я файлу, 
+    повний шлях до файлу, 
+    формат файлу, 
+    розміри в пікселях – висоту та ширину, 
+    ?вертикальну та горизонтальну роздільні здатності (в точках на сантиметр), 
+    ?фізичні розміри в сантиметрах, 
+    використаний формат пікселів,
+    ?використання біта або байта прозорості,(просто по самому крайнему узнаю, что с ним да как)
+    число біт на піксель.
     3. Пункт меню Завдання містить 2 підпункти по кількості
         індивідуальних завдань, при виборі яких запускається обробка. 
     Варіант 10. Додайте в програму інструмент лупа для збільшення і
@@ -84,7 +89,7 @@ namespace Kursach
             
             //ResizeRedraw = true;
         }
-
+        //1 Point
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Создание нового экземпляра дочерней формы
@@ -242,12 +247,42 @@ namespace Kursach
                 MessageBox.Show(ex.Message, ex.GetType().Name);
             }
         }
-        private void FormGeneral_Load(object sender, EventArgs e){}
-
+        //2 Point
         private void InformationToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Проверяем есть ли активная форма
+            if (this.ActiveMdiChild is null) {
+                MessageBox.Show("Активной формы не существует!");
+                return;
+            }
 
+            // Получаем активную форму 
+            FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
+
+            if(activeChildForm.ImageBuffer is null) {
+                MessageBox.Show("Картинки на форме не существует!");
+                return;
+            }
+
+            double inch = 2.54;
+
+            string text =
+                $"\nFile name: {Path.GetFileName(activeChildForm.ImagePath)};" +
+                $"\nFile path: {activeChildForm.ImagePath};" +
+                $"\nFile format: {activeChildForm.ImageFormat};" +
+                $"\nВысота изображения: {activeChildForm.ImageBuffer.Height}px;" +
+                $"\nШирина изображения: {activeChildForm.ImageBuffer.Width}px;" +
+                $"\nГоризонтальна роздільна здатність: {activeChildForm.ImageBuffer.HorizontalResolution / inch};" +
+                $"\nВертикальну роздільна здатність: {activeChildForm.ImageBuffer.VerticalResolution / inch};" +
+                $"\nВисота в см: {activeChildForm.ImageBuffer.HorizontalResolution}cm;" +
+                $"\nШирина в см: {activeChildForm.ImageBuffer.Width / inch}cm;" +
+                $"\nВикористаний формат пікселів: {activeChildForm.ImageBuffer.PixelFormat};" +
+                $"\nВикористання біта або байта прозорості: {Image.IsAlphaPixelFormat(activeChildForm.ImageBuffer.PixelFormat)};" +
+                $"\nЧисло біт на піксель: {Image.GetPixelFormatSize(activeChildForm.ImageBuffer.PixelFormat)}.";
+            
+            MessageBox.Show(text);
         }
+        private void FormGeneral_Load(object sender, EventArgs e){}
     }
 }
 
