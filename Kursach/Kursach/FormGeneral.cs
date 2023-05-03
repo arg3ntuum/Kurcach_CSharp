@@ -57,15 +57,14 @@ namespace Kursach
         X. Коли X і Y є масиви цілих чисел і елементи результуючого масиву
         перевищують допустимий діапазон, то вони скорочуються або
         округлюються. Продемонструйте в програмі застосування цієї функції.
-
-
     */
     public partial class FormGeneral : Form
     {
         // Буфер для картинки, через який передається на форму картинка
         public Bitmap ImageBuffer { get; private set; }
         public string ImagePath { get; private set; }
-
+        public bool IsZoomWorking { get; private set; }
+        
         private int _nextFormNumber { get; set; }
 
         public FormGeneral()
@@ -76,6 +75,7 @@ namespace Kursach
             ImageBuffer = null;
             ImagePath = string.Empty;
             _nextFormNumber = 1;
+            IsZoomWorking = false;
 
             // Присваиваем название для формы
             Text = Const.ProgramName;
@@ -144,10 +144,7 @@ namespace Kursach
         {
             // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
-            {
-                MessageBox.Show(Const.Messages.IsNull("ActiveMdiChild"));
-                return;
-            }
+                throw new ArgumentException(Const.Messages.ActiveFormIsNull);
 
             // Получаем активную форму 
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
@@ -164,10 +161,7 @@ namespace Kursach
         {
             // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
-            {
-                MessageBox.Show(Const.Messages.IsNull("ActiveMdiChild"));
-                return;
-            }
+                throw new ArgumentException(Const.Messages.ActiveFormIsNull);
 
             // Создаем объект SaveFileDialog
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
@@ -186,10 +180,7 @@ namespace Kursach
         {
             // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
-            {
-                MessageBox.Show(Const.Messages.IsNull("ActiveMdiChild"));
-                return;
-            }
+                throw new ArgumentException(Const.Messages.ActiveFormIsNull);
 
             // Определение активного дочернего MDI-окна
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
@@ -215,9 +206,9 @@ namespace Kursach
             //Закрываем приложение
             Application.Exit();
         }
-        private void GetAnswerToSaveAndSave(FormChild item) {
+        private void GetAnswerToSaveAndSave(FormChild formChild) {
             // Если файл был изменен, сохраняем значения
-            if (item.IsChanged)
+            if (formChild.IsChanged is true)
             {
                 // Проверяем, нажал ли пользователь ОК, и тогда сохраняем
                 DialogResult dialogResult =
@@ -225,7 +216,7 @@ namespace Kursach
 
                 // Проверяем, нажал ли пользователь ОК, и тогда сохраняем
                 if (dialogResult == DialogResult.OK)
-                    Save(item, item.ImagePath);
+                    Save(formChild, formChild.ImagePath);
             }
             else
                 MessageBox.Show(Const.Messages.FileNotWasChanged); 
@@ -234,7 +225,7 @@ namespace Kursach
         {
             try {
                 if (activeChildForm.ImageBuffer is null)
-                    throw new ArgumentException("Нечего сохранять, изображение не загружено");
+                    throw new ArgumentException(Const.Messages.ImageBuffesIsNull);
                 if (string.IsNullOrWhiteSpace(path))
                     throw new ArgumentException("Не задан путь сохранения");
 
@@ -251,18 +242,15 @@ namespace Kursach
         private void InformationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Проверяем есть ли активная форма
-            if (this.ActiveMdiChild is null) {
-                MessageBox.Show("Активной формы не существует!");
-                return;
-            }
+            if (this.ActiveMdiChild is null)
+                throw new ArgumentException(Const.Messages.ActiveFormIsNull);
 
             // Получаем активную форму 
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
 
-            if(activeChildForm.ImageBuffer is null) {
-                MessageBox.Show("Картинки на форме не существует!");
-                return;
-            }
+            //Проверяем, существует ли картинка на форме
+            if(activeChildForm.ImageBuffer is null)
+                throw new ArgumentException(Const.Messages.ImageBuffesIsNull);
 
             double inch = 2.54;
 
@@ -270,8 +258,8 @@ namespace Kursach
                 $"\nFile name: {Path.GetFileName(activeChildForm.ImagePath)};" +
                 $"\nFile path: {activeChildForm.ImagePath};" +
                 $"\nFile format: {activeChildForm.ImageFormat};" +
-                $"\nВысота изображения: {activeChildForm.ImageBuffer.Height}px;" +
-                $"\nШирина изображения: {activeChildForm.ImageBuffer.Width}px;" +
+                $"\nВисота зображення: {activeChildForm.ImageBuffer.Height}px;" +
+                $"\nШирина зображення: {activeChildForm.ImageBuffer.Width}px;" +
                 $"\nГоризонтальна роздільна здатність: {activeChildForm.ImageBuffer.HorizontalResolution / inch};" +
                 $"\nВертикальну роздільна здатність: {activeChildForm.ImageBuffer.VerticalResolution / inch};" +
                 $"\nВисота в см: {activeChildForm.ImageBuffer.HorizontalResolution}cm;" +
@@ -282,7 +270,27 @@ namespace Kursach
             
             MessageBox.Show(text);
         }
+        //3 Point
+        private void Task1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IsZoomWorking = !IsZoomWorking;
+
+            if (IsZoomWorking is true)
+            {
+                MessageBox.Show("Режим лупа активирован!");
+                this.Cursor = Cursors.Hand;
+            }
+            else { 
+                MessageBox.Show("Режим лупа деактивирован!");
+                this.Cursor = Cursors.Default;
+            }
+        }
+        private void Task2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
         private void FormGeneral_Load(object sender, EventArgs e){}
+
     }
 }
 

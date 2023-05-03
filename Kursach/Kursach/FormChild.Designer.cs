@@ -38,6 +38,8 @@
             this.Name = "FormChild";
             this.Text = "FormChild";
             this.Load += new System.EventHandler(this.FormChild_Load);
+            this.Click += new System.EventHandler(this.FormChild_Click);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FormChild_MouseMove);
             this.ResumeLayout(false);
 
         }
