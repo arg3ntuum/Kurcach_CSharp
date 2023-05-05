@@ -39,7 +39,7 @@ namespace Kursach
     число біт на піксель.
     3. Пункт меню Завдання містить 2 підпункти по кількості
         індивідуальних завдань, при виборі яких запускається обробка. 
-    Варіант 10. Додайте в програму інструмент лупа для збільшення і
+   + Варіант 10. Додайте в програму інструмент лупа для збільшення і
         зменшення зображення. Лупа збільшує зображення при натисканні лівою
         кнопкою миші, лупа зменшує зображення при натисканні правою кнопкою
         миші. При виборі цього інструменту через меню або панель інструментів
@@ -64,7 +64,7 @@ namespace Kursach
         public Bitmap ImageBuffer { get; private set; }
         public string ImagePath { get; private set; }
         public bool IsZoomWorking { get; private set; }
-        
+        public bool IsNumericChangerEnable { get; private set; }
         private int _nextFormNumber { get; set; }
 
         public FormGeneral()
@@ -287,7 +287,24 @@ namespace Kursach
         }
         private void Task2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Проверяем есть ли активная форма
+            if (this.ActiveMdiChild is null)
+                throw new ArgumentException(Const.Messages.ActiveFormIsNull);
 
+            IsNumericChangerEnable = !IsNumericChangerEnable;
+
+            if (IsNumericChangerEnable is true)
+            {
+                MessageBox.Show("Changer изменений активирован! Меняйте цвета!");
+                foreach (FormChild item in MdiChildren)
+                    item.ChangePoint_NumericUpDown.Enabled = true;
+            }
+            else
+            {
+                MessageBox.Show("Changer изменений деактивирован!");
+                foreach (FormChild item in MdiChildren)
+                    item.ChangePoint_NumericUpDown.Enabled = false;
+            }
         }
         private void FormGeneral_Load(object sender, EventArgs e){}
 

@@ -23,8 +23,7 @@ namespace Kursach
 
         private FormGeneral _parent { get; set; }
         private Graphics _grfx { get; set; }
-        private Point _cursorCoordinates { get; set; } 
-        private Color _defaultColor { get; set; }
+        private int coefficient { get; set; }
 
         public FormChild(FormGeneral parent, string caption)
         {
@@ -35,12 +34,14 @@ namespace Kursach
             ImagePath = string.Empty;
             IsChanged = false;
             IsZoomed = false;
-            _cursorCoordinates = new Point();
+
+            //По дефолту выключаем ChangePoint_NumericUpDown
+            ChangePoint_NumericUpDown.Enabled = false;
 
             // Присваиваем приватным свойствам значения
             _parent = parent;
             _grfx = null;
-            _defaultColor = Color.White;
+            coefficient = 2;
 
             // Подписываем события
             this.Paint += FormChild_Paint;
@@ -57,22 +58,60 @@ namespace Kursach
             if (ImageBuffer is null)
                 throw new ArgumentException(Const.Messages.ImageBuffesIsNull);
 
-            Point distance = new Point(_cursorCoordinates.X, _cursorCoordinates.Y);
-            int coefficient = 2;
-
             _grfx = e.Graphics;
 
-            if(IsZoomed is false)
-                _grfx.DrawImage(ImageBuffer, 0, 0, ClientRectangle.Width, ClientRectangle.Height);
+            Bitmap userImage = null;
+            
+            if (IsChanged is true)
+                userImage = GetChangedImage();
             else 
-                _grfx.DrawImage(
-                    ImageBuffer, 
-                    -_cursorCoordinates.X,
-                    -_cursorCoordinates.Y,
-                    ClientRectangle.Width * coefficient,
-                    ClientRectangle.Height * coefficient);
+                userImage = ImageBuffer;
 
+            if (IsZoomed is false)
+                _grfx.DrawImage(userImage, 0, 0, ClientRectangle.Width, ClientRectangle.Height);
+            else
+                _grfx.DrawImage(userImage, -PointToClient(Cursor.Position).X, -PointToClient(Cursor.Position).Y,
+                    ClientRectangle.Width * coefficient, ClientRectangle.Height * coefficient);
+            
             _grfx.Dispose();
+
+            if (IsChanged is true)
+            {
+                // Получаем ответ от пользователя
+                DialogResult dialogResult =
+                    MessageBox.Show("Вы хотите подгрузить измененную версию этой картинки в ImageBuffer?", Const.Messages.Attention, MessageBoxButtons.YesNo);
+
+                if(dialogResult == DialogResult.Yes)
+                    ImageBuffer = userImage;
+            }
+        }
+        public Bitmap GetChangedImage()
+        {
+            Bitmap bitmap = ImageBuffer;
+            for (int x = 0; x < bitmap.Width; x++)
+                for (int y = 0; y < bitmap.Height; y++) {
+                    Color color = Color.FromArgb(
+                            GetNumPixel(bitmap.GetPixel(x, y).R),
+                            GetNumPixel(bitmap.GetPixel(x, y).G),
+                            GetNumPixel(bitmap.GetPixel(x, y).B)
+                            );
+                    
+                    bitmap.SetPixel(x, y, color);
+                }
+            return bitmap;
+        }
+        private byte GetNumPixel(byte num)
+        {
+            byte newNum = 0;
+            try
+            {
+                newNum = Convert.ToByte(num + ChangePoint_NumericUpDown.Value);
+            }
+            catch (OverflowException)
+            {
+                newNum = 254;
+            }
+            return newNum;
         }
         public void UploadImageToBuffer()
         {
@@ -86,19 +125,6 @@ namespace Kursach
             ImagePath = _parent.ImagePath;
             ImageFormat = ImageBuffer.RawFormat;
         }
-        //public static string GetExtension(ImageFormat format)
-        //{
-        //    if (format == ImageFormat.Icon)
-        //        return ".ico";
-        //    if (format == ImageFormat.MemoryBmp)
-        //        return ".bmp";
-        //    return ImageCodecInfo.GetImageEncoders()
-        //        .FirstOrDefault(x => x.FormatID == format.Guid)?
-        //        .FilenameExtension
-        //        .Split(';')[0]
-        //        .TrimStart('*')
-        //        .ToLower() ?? $".{format.ToString().ToLower()}";
-        //}
         private void FormChild_Resize(object sender, EventArgs e) {
             Invalidate();//перерисовать
         }
@@ -114,11 +140,15 @@ namespace Kursach
 
             Invalidate();//перерисовать
         }
-        private void FormChild_MouseMove(object sender, MouseEventArgs e)
-        {
-            _cursorCoordinates = new Point(e.X, e.Y);
+        private void FormChild_Load(object sender, EventArgs e) {  
+        
         }
-        private void FormChild_Load(object sender, EventArgs e) {  }
 
+        private void ChangePoint_NumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            if (IsChanged is false)
+                IsChanged = true;
+            Invalidate();//перерисовать
+        }
     }
 }
