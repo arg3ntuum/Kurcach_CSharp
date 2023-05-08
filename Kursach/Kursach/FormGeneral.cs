@@ -307,7 +307,6 @@ namespace Kursach
             }
         }
         private void FormGeneral_Load(object sender, EventArgs e){}
-
     }
 }
 
