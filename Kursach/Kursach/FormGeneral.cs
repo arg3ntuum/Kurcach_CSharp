@@ -144,7 +144,7 @@ namespace Kursach
         {
             // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
-                throw new ArgumentException(Const.Messages.ActiveFormIsNull);
+                MessageBox.Show(Const.Messages.ActiveFormIsNull);
 
             // Получаем активную форму 
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
@@ -161,7 +161,7 @@ namespace Kursach
         {
             // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
-                throw new ArgumentException(Const.Messages.ActiveFormIsNull);
+                MessageBox.Show(Const.Messages.ActiveFormIsNull);
 
             // Создаем объект SaveFileDialog
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
@@ -180,7 +180,7 @@ namespace Kursach
         {
             // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
-                throw new ArgumentException(Const.Messages.ActiveFormIsNull);
+                MessageBox.Show(Const.Messages.ActiveFormIsNull);
 
             // Определение активного дочернего MDI-окна
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
@@ -225,9 +225,9 @@ namespace Kursach
         {
             try {
                 if (activeChildForm.ImageBuffer is null)
-                    throw new ArgumentException(Const.Messages.ImageBuffesIsNull);
+                    MessageBox.Show(Const.Messages.ImageBuffesIsNull);
                 if (string.IsNullOrWhiteSpace(path))
-                    throw new ArgumentException("Не задан путь сохранения");
+                    MessageBox.Show("Не задан путь сохранения");
 
                 File.Delete(path);
 
@@ -243,16 +243,25 @@ namespace Kursach
         {
             // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
-                throw new ArgumentException(Const.Messages.ActiveFormIsNull);
+                MessageBox.Show(Const.Messages.ActiveFormIsNull);
 
             // Получаем активную форму 
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
 
             //Проверяем, существует ли картинка на форме
             if(activeChildForm.ImageBuffer is null)
-                throw new ArgumentException(Const.Messages.ImageBuffesIsNull);
+                MessageBox.Show(Const.Messages.ImageBuffesIsNull);
 
             double inch = 2.54;
+
+            float dpiX, dpiY, dpiBase = 96;
+            using (var g = new Control().CreateGraphics())
+            {
+                dpiX = g.DpiX;
+                dpiY = g.DpiY;
+            }
+            var screenRealWidth = activeChildForm.ImageBuffer.Width * dpiX / dpiBase;
+            var screenRealHeight = activeChildForm.ImageBuffer.Height * dpiY / dpiBase;
 
             string text =
                 $"\nFile name: {Path.GetFileName(activeChildForm.ImagePath)};" +
@@ -262,8 +271,8 @@ namespace Kursach
                 $"\nШирина зображення: {activeChildForm.ImageBuffer.Width}px;" +
                 $"\nГоризонтальна роздільна здатність: {activeChildForm.ImageBuffer.HorizontalResolution / inch};" +
                 $"\nВертикальну роздільна здатність: {activeChildForm.ImageBuffer.VerticalResolution / inch};" +
-                $"\nВисота в см: {activeChildForm.ImageBuffer.HorizontalResolution}cm;" +
-                $"\nШирина в см: {activeChildForm.ImageBuffer.Width / inch}cm;" +
+                $"\nВисота в см: {activeChildForm.ImageBuffer.Width * dpiX / dpiBase}cm;" +
+                $"\nШирина в см: {screenRealHeight = activeChildForm.ImageBuffer.Height * dpiY / dpiBase}cm;" +
                 $"\nВикористаний формат пікселів: {activeChildForm.ImageBuffer.PixelFormat};" +
                 $"\nВикористання біта або байта прозорості: {Image.IsAlphaPixelFormat(activeChildForm.ImageBuffer.PixelFormat)};" +
                 $"\nЧисло біт на піксель: {Image.GetPixelFormatSize(activeChildForm.ImageBuffer.PixelFormat)}.";
@@ -289,7 +298,7 @@ namespace Kursach
         {
             // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
-                throw new ArgumentException(Const.Messages.ActiveFormIsNull);
+                MessageBox.Show(Const.Messages.ActiveFormIsNull);
 
             IsNumericChangerEnable = !IsNumericChangerEnable;
 
@@ -309,7 +318,3 @@ namespace Kursach
         private void FormGeneral_Load(object sender, EventArgs e){}
     }
 }
-
-
-
-

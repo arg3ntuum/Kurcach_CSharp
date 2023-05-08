@@ -56,7 +56,7 @@ namespace Kursach
         public void FormChild_Paint(object sender, PaintEventArgs e)
         {
             if (ImageBuffer is null)
-                throw new ArgumentException(Const.Messages.ImageBuffesIsNull);
+                MessageBox.Show(Const.Messages.ImageBuffesIsNull);
 
             _grfx = e.Graphics;
 
@@ -116,10 +116,10 @@ namespace Kursach
         public void UploadImageToBuffer()
         {
             if (_parent.ImageBuffer is null)
-                throw new ArgumentException(Const.Messages.ImageBuffesIsNull);
+                MessageBox.Show(Const.Messages.ImageBuffesIsNull);
 
             if ( _parent.ImagePath == string.Empty)
-                throw new ArgumentException("ImagePath is empty!");
+                MessageBox.Show("ImagePath is empty!");
 
             ImageBuffer = _parent.ImageBuffer;
             ImagePath = _parent.ImagePath;
