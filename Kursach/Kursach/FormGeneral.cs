@@ -299,7 +299,7 @@ namespace Kursach
             // Проверяем есть ли активная форма
             if (this.ActiveMdiChild is null)
                 MessageBox.Show(Const.Messages.ActiveFormIsNull);
-
+            
             IsNumericChangerEnable = !IsNumericChangerEnable;
 
             if (IsNumericChangerEnable is true)
