@@ -100,6 +100,11 @@ namespace Kursach
 
             // Подзагрузка Image
             newChild.UploadImageToBuffer();
+
+            if(IsNumericChangerEnable is true)
+                newChild.ChangePoint_NumericUpDown.Enabled = true;
+            else 
+                newChild.ChangePoint_NumericUpDown.Enabled = false;
         }
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -118,22 +123,21 @@ namespace Kursach
             }
             catch
             {
-                MessageBox.Show("Cannot find file " + ImagePath +
-               "!", Text, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show("Cannot find file " + ImagePath + "!", Text, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
 
-            // Определение активного дочернего MDI-окна
-            FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
-
-            if (activeChildForm == null)
+            if (ActiveMdiChild is null)
             {
                 DialogResult dialogResult =
-                    MessageBox.Show("Вы хотите создать форму для отображения картинки?", Const.Messages.Attention, MessageBoxButtons.YesNo);
+                    MessageBox.Show(Const.Messages.CreateFormToViewImage, Const.Messages.Attention, MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                     CreateToolStripMenuItem_Click(null, null);
             }
             else {
+                // Определение активного дочернего MDI-окна
+                FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
+
                 activeChildForm.UploadImageToBuffer();
                 activeChildForm.Invalidate();
             }
@@ -143,8 +147,11 @@ namespace Kursach
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Проверяем есть ли активная форма
-            if (this.ActiveMdiChild is null)
+            if (ActiveMdiChild is null)
+            {
                 MessageBox.Show(Const.Messages.ActiveFormIsNull);
+                return;
+            }
 
             // Получаем активную форму 
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
@@ -160,8 +167,11 @@ namespace Kursach
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Проверяем есть ли активная форма
-            if (this.ActiveMdiChild is null)
+            if (ActiveMdiChild is null)
+            {
                 MessageBox.Show(Const.Messages.ActiveFormIsNull);
+                return;
+            }
 
             // Создаем объект SaveFileDialog
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
@@ -179,8 +189,11 @@ namespace Kursach
         private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Проверяем есть ли активная форма
-            if (this.ActiveMdiChild is null)
+            if (ActiveMdiChild is null)
+            {
                 MessageBox.Show(Const.Messages.ActiveFormIsNull);
+                return;
+            }
 
             // Определение активного дочернего MDI-окна
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
@@ -194,8 +207,11 @@ namespace Kursach
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Проверяем есть ли активная форма и закрываем приложение, если нет их
-            if (this.ActiveMdiChild is null)
+            if (ActiveMdiChild is null)
+            {
+                MessageBox.Show(Const.Messages.ActiveFormIsNull);
                 Application.Exit();
+            }
             
             foreach (FormChild item in MdiChildren)
             {
@@ -224,10 +240,14 @@ namespace Kursach
         private void Save(FormChild activeChildForm, string path)
         {
             try {
-                if (activeChildForm.ImageBuffer is null)
+                if (activeChildForm.ImageBuffer is null) { 
                     MessageBox.Show(Const.Messages.ImageBuffesIsNull);
-                if (string.IsNullOrWhiteSpace(path))
-                    MessageBox.Show("Не задан путь сохранения");
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(path)) { 
+                    MessageBox.Show(Const.Messages.IsNullOrWhiteSpace);
+                    return;
+                }
 
                 File.Delete(path);
 
@@ -242,15 +262,19 @@ namespace Kursach
         private void InformationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Проверяем есть ли активная форма
-            if (this.ActiveMdiChild is null)
+            if (ActiveMdiChild is null) {
                 MessageBox.Show(Const.Messages.ActiveFormIsNull);
+                return;
+            }
 
             // Получаем активную форму 
             FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
 
             //Проверяем, существует ли картинка на форме
-            if(activeChildForm.ImageBuffer is null)
+            if (activeChildForm.ImageBuffer is null) { 
                 MessageBox.Show(Const.Messages.ImageBuffesIsNull);
+                return;
+            }
 
             double inch = 2.54;
 
@@ -260,8 +284,6 @@ namespace Kursach
                 dpiX = g.DpiX;
                 dpiY = g.DpiY;
             }
-            var screenRealWidth = activeChildForm.ImageBuffer.Width * dpiX / dpiBase;
-            var screenRealHeight = activeChildForm.ImageBuffer.Height * dpiY / dpiBase;
 
             string text =
                 $"\nFile name: {Path.GetFileName(activeChildForm.ImagePath)};" +
@@ -271,8 +293,8 @@ namespace Kursach
                 $"\nШирина зображення: {activeChildForm.ImageBuffer.Width}px;" +
                 $"\nГоризонтальна роздільна здатність: {activeChildForm.ImageBuffer.HorizontalResolution / inch};" +
                 $"\nВертикальну роздільна здатність: {activeChildForm.ImageBuffer.VerticalResolution / inch};" +
-                $"\nВисота в см: {activeChildForm.ImageBuffer.Width * dpiX / dpiBase}cm;" +
-                $"\nШирина в см: {screenRealHeight = activeChildForm.ImageBuffer.Height * dpiY / dpiBase}cm;" +
+                $"\nВисота в см: {activeChildForm.ImageBuffer.Height * dpiX / dpiBase}cm;" +
+                $"\nШирина в см: {activeChildForm.ImageBuffer.Width * dpiY / dpiBase}cm;" +
                 $"\nВикористаний формат пікселів: {activeChildForm.ImageBuffer.PixelFormat};" +
                 $"\nВикористання біта або байта прозорості: {Image.IsAlphaPixelFormat(activeChildForm.ImageBuffer.PixelFormat)};" +
                 $"\nЧисло біт на піксель: {Image.GetPixelFormatSize(activeChildForm.ImageBuffer.PixelFormat)}.";
@@ -297,9 +319,12 @@ namespace Kursach
         private void Task2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Проверяем есть ли активная форма
-            if (this.ActiveMdiChild is null)
+            if (ActiveMdiChild is null)
+            {
                 MessageBox.Show(Const.Messages.ActiveFormIsNull);
-            
+                return;
+            }
+
             IsNumericChangerEnable = !IsNumericChangerEnable;
 
             if (IsNumericChangerEnable is true)

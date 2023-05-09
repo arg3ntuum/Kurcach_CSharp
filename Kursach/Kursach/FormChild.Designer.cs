@@ -41,6 +41,11 @@
             0,
             0,
             0});
+            this.ChangePoint_NumericUpDown.Minimum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            -2147483648});
             this.ChangePoint_NumericUpDown.Name = "ChangePoint_NumericUpDown";
             this.ChangePoint_NumericUpDown.Size = new System.Drawing.Size(98, 22);
             this.ChangePoint_NumericUpDown.TabIndex = 0;

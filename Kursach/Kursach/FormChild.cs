@@ -22,7 +22,6 @@ namespace Kursach
         public bool IsZoomed { get; private set; }
 
         private FormGeneral _parent { get; set; }
-        private Graphics _grfx { get; set; }
         private int coefficient { get; set; }
 
         public FormChild(FormGeneral parent, string caption)
@@ -40,7 +39,6 @@ namespace Kursach
 
             // Присваиваем приватным свойствам значения
             _parent = parent;
-            _grfx = null;
             coefficient = 2;
 
             // Подписываем события
@@ -53,13 +51,15 @@ namespace Kursach
             // Задание заголовка
             this.Text = caption;
         }
+        private void FormChild_Load(object sender, EventArgs e) {  }
         public void FormChild_Paint(object sender, PaintEventArgs e)
         {
-            if (ImageBuffer is null)
+            if (ImageBuffer is null) { 
                 MessageBox.Show(Const.Messages.ImageBuffesIsNull);
+                return;
+            }
 
-            _grfx = e.Graphics;
-
+            Graphics graphics = e.Graphics;
             Bitmap userImage = null;
             
             if (IsChanged is true)
@@ -68,18 +68,18 @@ namespace Kursach
                 userImage = ImageBuffer;
 
             if (IsZoomed is false)
-                _grfx.DrawImage(userImage, 0, 0, ClientRectangle.Width, ClientRectangle.Height);
+                graphics.DrawImage(userImage, 0, 0, ClientRectangle.Width, ClientRectangle.Height);
             else
-                _grfx.DrawImage(userImage, -PointToClient(Cursor.Position).X, -PointToClient(Cursor.Position).Y,
+                graphics.DrawImage(userImage, -PointToClient(Cursor.Position).X, -PointToClient(Cursor.Position).Y,
                     ClientRectangle.Width * coefficient, ClientRectangle.Height * coefficient);
-            
-            _grfx.Dispose();
+
+            graphics.Dispose();
 
             if (IsChanged is true)
             {
                 // Получаем ответ от пользователя
                 DialogResult dialogResult =
-                    MessageBox.Show("Вы хотите подгрузить измененную версию этой картинки в ImageBuffer?", Const.Messages.Attention, MessageBoxButtons.YesNo);
+                    MessageBox.Show(Const.Messages.DownloadImageToBuffer, Const.Messages.Attention, MessageBoxButtons.YesNo);
 
                 if(dialogResult == DialogResult.Yes)
                     ImageBuffer = userImage;
@@ -115,11 +115,14 @@ namespace Kursach
         }
         public void UploadImageToBuffer()
         {
-            if (_parent.ImageBuffer is null)
-                MessageBox.Show(Const.Messages.ImageBuffesIsNull);
+            if (_parent.ImageBuffer is null) { 
+                return;
+            }
 
-            if ( _parent.ImagePath == string.Empty)
-                MessageBox.Show("ImagePath is empty!");
+            if (_parent.ImagePath == string.Empty) { 
+                MessageBox.Show(Const.Messages.IsNullOrWhiteSpace);
+                return;
+            }
 
             ImageBuffer = _parent.ImageBuffer;
             ImagePath = _parent.ImagePath;
@@ -140,10 +143,6 @@ namespace Kursach
 
             Invalidate();//перерисовать
         }
-        private void FormChild_Load(object sender, EventArgs e) {  
-        
-        }
-
         private void ChangePoint_NumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             if (IsChanged is false)
