@@ -13,59 +13,18 @@ using System.Runtime.Remoting.Messaging;
 
 namespace Kursach
 {
-    /*
-    Задачи:
-    
-    +1) Створити – створення нового дочірнього вікна.
-    +2) Відкрити – відкриття файлів із зображеннями 
-            ( формат файлів *.bmp, *.jpg, *.png, *.gif, *.tiff).
-    +3) Зберегти – збереження зображення в тому самому форматі.
-    +4) Зберегти як… - збереження зображення в одному з наступних форматів 
-            *.bmp, *.jpg, *.png, *.gif, *.tiff
-    +5) Закрити – закриття дочірнього вікна. Перед закриттям дочірнього вікна 
-            потрібно вивести запит про необхідність збереження змін у файл, якщо вони відбувались.
-    +6) Вихід – закриття всього додатку. Перед закриттям додатку необхідно вивести запит 
-            про збереження змін в усіх відкритих файлах, в яких вони відбувалися.
-    +-2. Пункт меню Інформація має виводити докладні відомості про
-    зображення, що відкрите в активному дочірньому вікні, а саме – 
-    ім’я файлу, 
-    повний шлях до файлу, 
-    формат файлу, 
-    розміри в пікселях – висоту та ширину, 
-    ?вертикальну та горизонтальну роздільні здатності (в точках на сантиметр), 
-    ?фізичні розміри в сантиметрах, 
-    використаний формат пікселів,
-    ?використання біта або байта прозорості
-    число біт на піксель.
-    3. Пункт меню Завдання містить 2 підпункти по кількості
-        індивідуальних завдань, при виборі яких запускається обробка. 
-   + Варіант 10. Додайте в програму інструмент лупа для збільшення і
-        зменшення зображення. Лупа збільшує зображення при натисканні лівою
-        кнопкою миші, лупа зменшує зображення при натисканні правою кнопкою
-        миші. При виборі цього інструменту через меню або панель інструментів
-        повинен змінюватися курсор миші при знаходженні над клієнтської областю
-        вікна. Кнопка на панелі інструментів і пункт меню повинні бути позначені
-        при виборі відповідного інструменту.
-    Варіант 20. Підсумовування двох зображень або константи і
-        зображення. Функція imadd (X, Y, Z) підсумовує кожен елемент масиву X з
-        відповідним елементом масиву Y і повертає суму відповідних елементів в
-        результуючий масив Z. X і Y представляють собою масиви чисел із
-        плаваючою комою однакового розміру і однакового формату представлення
-        даних. Результуючий масив Z має той же розмір і формат представлення
-        даних, що і Y, коли Y скаляр формату double. В іншому випадку розмірність і
-        формат представлення даних результуючого масиву Z збігається з масивом
-        X. Коли X і Y є масиви цілих чисел і елементи результуючого масиву
-        перевищують допустимий діапазон, то вони скорочуються або
-        округлюються. Продемонструйте в програмі застосування цієї функції.
-    */
     public partial class FormGeneral : Form
     {
-        // Буфер для картинки, через який передається на форму картинка
+        // Буфер для картинки
         public Bitmap ImageBuffer { get; private set; }
+        // Путь к картинке
         public string ImagePath { get; private set; }
-        public bool IsZoomWorking { get; private set; }
-        public bool IsNumericChangerEnable { get; private set; }
+        // Количество редакторов
         private int _nextFormNumber { get; set; }
+        // Активен ли зум
+        public bool IsZoomWorking { get; private set; }
+        // Изменитель картинки
+        public bool IsNumericChangerEnable { get; private set; }
 
         public FormGeneral()
         {
@@ -86,8 +45,6 @@ namespace Kursach
             OpenFileDialogWindow.FileName = Const.ImageFileName;
             // Встановлюємо фільтр для файлів
             OpenFileDialogWindow.Filter = Const.FilesFilter;
-            
-            //ResizeRedraw = true;
         }
         //1 Point
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -101,6 +58,7 @@ namespace Kursach
             // Подзагрузка Image
             newChild.UploadImageToBuffer();
 
+            // Включаем changer картинки
             if(IsNumericChangerEnable is true)
                 newChild.ChangePoint_NumericUpDown.Enabled = true;
             else 
@@ -108,29 +66,33 @@ namespace Kursach
         }
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //если результат равен Cancel, то выходим
+            // Если результат равен Cancel, то выходим
             if (OpenFileDialogWindow.ShowDialog() == DialogResult.Cancel)
                 return;
 
-            // получаем выбранный файл
+            // Получаем выбранный файл
             ImagePath = OpenFileDialogWindow.FileName;
 
             try
             {
-                //пытаемся открыть файл
+                // Пытаемся открыть файл
                 using (var bmp = (Bitmap)Image.FromFile(ImagePath))
                     ImageBuffer = new Bitmap(bmp);
             }
             catch
             {
+                // Если файл не открылся
                 MessageBox.Show("Cannot find file " + ImagePath + "!", Text, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
 
+            // Если нет активной формы, спросим про создание
             if (ActiveMdiChild is null)
             {
                 DialogResult dialogResult =
                     MessageBox.Show(Const.Messages.CreateFormToViewImage, Const.Messages.Attention, MessageBoxButtons.YesNo);
+                
+                // Если пользователь ответил да, то создаем формочку
                 if (dialogResult == DialogResult.Yes)
                     CreateToolStripMenuItem_Click(null, null);
             }
@@ -138,10 +100,14 @@ namespace Kursach
                 // Определение активного дочернего MDI-окна
                 FormChild activeChildForm = (FormChild)this.ActiveMdiChild;
 
+                // Подгружаем картинку в буфер
                 activeChildForm.UploadImageToBuffer();
+                // Перерисовываем графику
                 activeChildForm.Invalidate();
             }
+            // Очищаем буфер
             ImageBuffer = null;
+            // Очищаем путь к картинке
             ImagePath = string.Empty;
         }
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -208,14 +174,14 @@ namespace Kursach
         {
             // Проверяем есть ли активная форма и закрываем приложение, если нет их
             if (ActiveMdiChild is null)
-            {
-                MessageBox.Show(Const.Messages.ActiveFormIsNull);
                 Application.Exit();
-            }
             
+            // Перебираем массив дочерних форм
             foreach (FormChild item in MdiChildren)
             {
+                // Выбираем каждую форму
                 item.Select();
+                // Сохраняем картинку
                 GetAnswerToSaveAndSave(item);
             }
 
@@ -239,22 +205,34 @@ namespace Kursach
         }
         private void Save(FormChild activeChildForm, string path)
         {
-            try {
-                if (activeChildForm.ImageBuffer is null) { 
-                    MessageBox.Show(Const.Messages.ImageBuffesIsNull);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(path)) { 
-                    MessageBox.Show(Const.Messages.IsNullOrWhiteSpace);
-                    return;
-                }
+            // Проверяем пуст ли буфер картинки
+            if (activeChildForm.ImageBuffer is null)
+            {
+                MessageBox.Show(Const.Messages.ImageBuffesIsNull);
+                return;
+            }
 
+            // Проверяем пуст ли путь к картинке
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                MessageBox.Show(Const.Messages.IsNullOrWhiteSpace);
+                return;
+            }
+
+            // Если в блоке будет ошибка, прокинуть ее через MessageBox
+            try
+            {
+                // Удаляем файл
                 File.Delete(path);
 
+                // Сохраняем файл
                 activeChildForm.ImageBuffer.Save(path, activeChildForm.ImageFormat);
+
+                //Закрываем форму
                 activeChildForm.Close();
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 MessageBox.Show(ex.Message, ex.GetType().Name);
             }
         }
@@ -276,8 +254,10 @@ namespace Kursach
                 return;
             }
 
+            // Цифра для формулы
             double inch = 2.54;
-
+            
+            // Переменные dpi
             float dpiX, dpiY, dpiBase = 96;
             using (var g = new Control().CreateGraphics())
             {
@@ -285,6 +265,7 @@ namespace Kursach
                 dpiY = g.DpiY;
             }
 
+            // Создадим переменную текста Информации
             string text =
                 $"\nFile name: {Path.GetFileName(activeChildForm.ImagePath)};" +
                 $"\nFile path: {activeChildForm.ImagePath};" +
@@ -304,15 +285,20 @@ namespace Kursach
         //3 Point
         private void Task1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Состояние зума переключается
             IsZoomWorking = !IsZoomWorking;
 
+            // Активируем лупу, на новом состоянии
             if (IsZoomWorking is true)
             {
                 MessageBox.Show("Режим лупа активирован!");
+                // Меняем курсор
                 this.Cursor = Cursors.Hand;
             }
+            // Выключаем лупу, на новом состоянии
             else { 
                 MessageBox.Show("Режим лупа деактивирован!");
+                // Меняем курсор
                 this.Cursor = Cursors.Default;
             }
         }
@@ -325,17 +311,24 @@ namespace Kursach
                 return;
             }
 
+            // Состояние Changer переключается
             IsNumericChangerEnable = !IsNumericChangerEnable;
 
+            // Если Changer активирован 
             if (IsNumericChangerEnable is true)
             {
                 MessageBox.Show("Changer изменений активирован! Меняйте цвета!");
+                
+                // Включаем его на всех формах
                 foreach (FormChild item in MdiChildren)
                     item.ChangePoint_NumericUpDown.Enabled = true;
             }
+            // Если Changer деактивирован
             else
             {
                 MessageBox.Show("Changer изменений деактивирован!");
+
+                // Выключаем его на всех формах
                 foreach (FormChild item in MdiChildren)
                     item.ChangePoint_NumericUpDown.Enabled = false;
             }
