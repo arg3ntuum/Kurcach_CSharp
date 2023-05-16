@@ -226,7 +226,7 @@ namespace Kursach
                 File.Delete(path);
 
                 // Сохраняем файл
-                activeChildForm.ImageBuffer.Save(path, activeChildForm.ImageFormat);
+                activeChildForm.ImageBuffer.Save(path, activeChildForm.ImageBuffer.RawFormat);
 
                 //Закрываем форму
                 activeChildForm.Close();
@@ -269,7 +269,7 @@ namespace Kursach
             string text =
                 $"\nFile name: {Path.GetFileName(activeChildForm.ImagePath)};" +
                 $"\nFile path: {activeChildForm.ImagePath};" +
-                $"\nFile format: {activeChildForm.ImageFormat};" +
+                $"\nFile format: {activeChildForm.ImageBuffer.RawFormat};" +
                 $"\nВисота зображення: {activeChildForm.ImageBuffer.Height}px;" +
                 $"\nШирина зображення: {activeChildForm.ImageBuffer.Width}px;" +
                 $"\nГоризонтальна роздільна здатність: {activeChildForm.ImageBuffer.HorizontalResolution / inch};" +

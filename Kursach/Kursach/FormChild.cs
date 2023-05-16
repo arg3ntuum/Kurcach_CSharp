@@ -16,18 +16,12 @@ namespace Kursach
     {
         // Буфер картинки
         public Bitmap ImageBuffer { get; private set; }
-        // Формат картинки
-        public ImageFormat ImageFormat { get; private set; }
-
         // Путь к картинке
         public string ImagePath { get; private set; }
         // Статус измененной картинки
         public bool IsChanged { get; private set; }
         // Статус приближения картинки
         public bool IsZoomed { get; private set; }
-
-        // Свойство, что сохраняет ссылку на родительскую форму
-        private FormGeneral _parent { get; set; }
         // Коеффициент приближения
         private int coefficient { get; set; }
 
@@ -45,7 +39,6 @@ namespace Kursach
             ChangePoint_NumericUpDown.Enabled = false;
 
             // Присваиваем приватным свойствам значения
-            _parent = parent;
             coefficient = 2;
 
             // Подписываем события
@@ -136,20 +129,19 @@ namespace Kursach
         public void UploadImageToBuffer()
         {
             // Проверяем буфер картинки
-            if (_parent.ImageBuffer is null) { 
+            if (((FormGeneral)this.MdiParent).ImageBuffer is null) { 
                 return;
             }
 
             // Проверяем путь картинки
-            if (_parent.ImagePath == string.Empty) { 
+            if (((FormGeneral)this.MdiParent).ImagePath == string.Empty) { 
                 MessageBox.Show(Const.Messages.IsNullOrWhiteSpace);
                 return;
             }
 
             // Присваиваем в поля данные
-            ImageBuffer = _parent.ImageBuffer;
-            ImagePath = _parent.ImagePath;
-            ImageFormat = ImageBuffer.RawFormat;
+            ImageBuffer = ((FormGeneral)this.MdiParent).ImageBuffer;
+            ImagePath = ((FormGeneral)this.MdiParent).ImagePath;
         }
         private void FormChild_Resize(object sender, EventArgs e) {
             Invalidate();//перерисовать
@@ -157,7 +149,7 @@ namespace Kursach
         private void FormChild_Click(object sender, EventArgs e)
         {
             // Если приближение не активировано выходим
-            if(_parent.IsZoomWorking is false)
+            if(((FormGeneral)this.MdiParent).IsZoomWorking is false)
                 return;
 
             // Если приближение в этой форме не было произведено, отмечаем

@@ -36,6 +36,7 @@
             // 
             this.ChangePoint_NumericUpDown.Dock = System.Windows.Forms.DockStyle.Left;
             this.ChangePoint_NumericUpDown.Location = new System.Drawing.Point(0, 0);
+            this.ChangePoint_NumericUpDown.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ChangePoint_NumericUpDown.Maximum = new decimal(new int[] {
             255,
             0,
@@ -47,16 +48,17 @@
             0,
             -2147483648});
             this.ChangePoint_NumericUpDown.Name = "ChangePoint_NumericUpDown";
-            this.ChangePoint_NumericUpDown.Size = new System.Drawing.Size(98, 22);
+            this.ChangePoint_NumericUpDown.Size = new System.Drawing.Size(74, 20);
             this.ChangePoint_NumericUpDown.TabIndex = 0;
             this.ChangePoint_NumericUpDown.ValueChanged += new System.EventHandler(this.ChangePoint_NumericUpDown_ValueChanged);
             // 
             // FormChild
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(681, 379);
+            this.ClientSize = new System.Drawing.Size(511, 308);
             this.Controls.Add(this.ChangePoint_NumericUpDown);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "FormChild";
             this.Text = "FormChild";
             this.Load += new System.EventHandler(this.FormChild_Load);
