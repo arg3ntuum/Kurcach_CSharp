@@ -19,12 +19,12 @@ namespace Kursach
         public Bitmap ImageBuffer { get; private set; }
         // Путь к картинке
         public string ImagePath { get; private set; }
-        // Количество редакторов
-        private int _nextFormNumber { get; set; }
         // Активен ли зум
         public bool IsZoomWorking { get; private set; }
         // Изменитель картинки
         public bool IsNumericChangerEnable { get; private set; }
+        // Количество редакторов
+        private int _nextFormNumber { get; set; }
 
         public FormGeneral()
         {
@@ -291,13 +291,13 @@ namespace Kursach
             // Активируем лупу, на новом состоянии
             if (IsZoomWorking is true)
             {
-                MessageBox.Show("Режим лупа активирован!");
+                MessageBox.Show("Режим лупа активовано!");
                 // Меняем курсор
                 this.Cursor = Cursors.Hand;
             }
             // Выключаем лупу, на новом состоянии
             else { 
-                MessageBox.Show("Режим лупа деактивирован!");
+                MessageBox.Show("Режим лупа деактивовано!");
                 // Меняем курсор
                 this.Cursor = Cursors.Default;
             }
@@ -317,7 +317,7 @@ namespace Kursach
             // Если Changer активирован 
             if (IsNumericChangerEnable is true)
             {
-                MessageBox.Show("Changer изменений активирован! Меняйте цвета!");
+                MessageBox.Show("Changer змін активовано! Змінюйте кольори!");
                 
                 // Включаем его на всех формах
                 foreach (FormChild item in MdiChildren)
@@ -326,7 +326,7 @@ namespace Kursach
             // Если Changer деактивирован
             else
             {
-                MessageBox.Show("Changer изменений деактивирован!");
+                MessageBox.Show("Changer змін деактивовано!");
 
                 // Выключаем его на всех формах
                 foreach (FormChild item in MdiChildren)
