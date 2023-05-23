@@ -17,6 +17,8 @@ namespace Kursach
     {
         // Буфер для картинки
         public Bitmap ImageBuffer { get; private set; }
+        // Буфер картинки для добавления картинок
+        public Bitmap ImageBufferAdd { get; private set; }
         // Путь к картинке
         public string ImagePath { get; private set; }
         // Активен ли зум
@@ -31,6 +33,7 @@ namespace Kursach
             InitializeComponent();
 
             // Присваиваем свойствам значения
+            ImageBufferAdd = null;
             ImageBuffer = null;
             ImagePath = string.Empty;
             _nextFormNumber = 1;
@@ -63,6 +66,8 @@ namespace Kursach
                 newChild.ChangePoint_NumericUpDown.Enabled = true;
             else 
                 newChild.ChangePoint_NumericUpDown.Enabled = false;
+
+            newChild.UploadToBuffer += UploadToBuffer;
         }
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -208,7 +213,7 @@ namespace Kursach
             // Проверяем пуст ли буфер картинки
             if (activeChildForm.ImageBuffer is null)
             {
-                MessageBox.Show(Const.Messages.ImageBuffesIsNull);
+                MessageBox.Show(Const.Messages.ImageBufferIsNull);
                 return;
             }
 
@@ -250,7 +255,7 @@ namespace Kursach
 
             //Проверяем, существует ли картинка на форме
             if (activeChildForm.ImageBuffer is null) { 
-                MessageBox.Show(Const.Messages.ImageBuffesIsNull);
+                MessageBox.Show(Const.Messages.ImageBufferIsNull);
                 return;
             }
 
@@ -332,6 +337,18 @@ namespace Kursach
                 foreach (FormChild item in MdiChildren)
                     item.ChangePoint_NumericUpDown.Enabled = false;
             }
+        }
+        private void UploadToBuffer(Bitmap newImage)
+        {
+            // Выключаем на всех формах выбранный елемент
+            foreach (FormChild item in MdiChildren)
+                // Если елемент включен
+                if (item.Merged_CheckBox.Checked is true)
+                    // Если устанавливаемая картинка не равна новой картинке либо буфер пустой
+                    if (item.ImageBuffer != newImage || item.ImageBuffer is null)
+                        item.Merged_CheckBox.Checked = false;
+
+            ImageBufferAdd = newImage;
         }
         private void FormGeneral_Load(object sender, EventArgs e){}
     }
